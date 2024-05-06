@@ -1,4 +1,4 @@
-﻿@page "/Catedratico"
+﻿@page "/Catedratico2"
 @inject HttpClient Http
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
@@ -42,7 +42,7 @@
     </div>
 </EditForm>
 
-@if (catedraticos.Count > 0)
+@if (catedraticos!= null)
 {    
     <table class="table">
         <thead>
