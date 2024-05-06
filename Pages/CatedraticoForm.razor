@@ -52,6 +52,7 @@
                 <th>Fecha Nacimiento</th>
                 <th>Título</th>
                 <th>Colegiado</th>
+                <th>Eliminar</th>
             </tr>
         </thead>
         <tbody>
@@ -61,16 +62,16 @@
                     <td>@catedratico.Nombre</td>
                     <td>@catedratico.Apellido</td>
                     <td>@catedratico.FechaNacimiento</td>
-                    <td>@catedratico.Titulo></td>
+                    <td>@catedratico.Titulo</td>
                     <td>@catedratico.Colegiado</td>
-                    
+                    <td><button class="btn btn-danger" @onclick="@(() => BorrarCatedratico(catedratico.Colegiado))">Eliminar</button></td>
                 </tr>
             }
         </tbody>
     </table>
 }
 
-@code {
+    @code {
 
     private Catedratico catedratico = new Catedratico();
     List<Catedratico> catedraticos = new List<Catedratico>();
@@ -88,6 +89,13 @@
     {   //La primera vez que se corre poner en comentarios, pues como no existen datos
         //convierta la lista catedraticos en null
         catedraticos = await localStorage.GetItemAsync<List<Catedratico>>("catedraticos");
+    }
+
+    protected async Task BorrarCatedratico(string Colegiado)
+    {
+        catedraticos.Remove(catedraticos.First(c => c.Colegiado == Colegiado));
+        await localStorage.SetItemAsync("catedraticos", catedraticos);
+
     }
 
 }
