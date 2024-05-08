@@ -1,0 +1,89 @@
+﻿@page "/catedratico-editar/{colegiado}"
+@inject HttpClient Http
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager NavigationManager
+
+
+
+<h3>Catedratico</h3>
+
+<EditForm Model="@catedratico" OnValidSubmit="@Guardar">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="Nombre">Nombre del Catedrático</label>
+        <InputText id="Nombre" @bind-Value="catedratico.Nombre" class="form-control" />
+        <ValidationMessage For="() => catedratico.Nombre" />
+    </div>
+    <div class="form-group">
+        <label for="Apellido">Apellido del Catedrático</label>
+        <InputText id="Apellido" @bind-Value="catedratico.Apellido" class="form-control" />
+        <ValidationMessage For="() => catedratico.Apellido" />
+    </div>
+    <div class="form-group">
+        <label for="Direccion">Dirección del Catedrático</label>
+        <InputText id="Direccion" @bind-Value="catedratico.Direccion" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="FechaNacimiento">Fecha de Nacimiento</label>
+        <InputDate id="FechaNacimiento" @bind-Value="catedratico.FechaNacimiento" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="Titulo">Título Obtenido</label>
+        <InputText id="Titulo" @bind-Value="catedratico.Titulo" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="Colegiado">Número de Colegiado</label>
+        <InputText id="Colegiado" @bind-Value="catedratico.Colegiado" class="form-control" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </div>
+</EditForm>
+
+@code {
+
+    //Aquí lee el parametro que se le envió desde el otro formulario en
+    //@page "/catedratico-editar/{colegiado}" 
+    // aqui guarda el valor que viene en {colegiado}
+    [Parameter]
+    public string colegiado { get; set; }
+
+    private Catedratico catedratico = new Catedratico();
+    List<Catedratico> catedraticos = new List<Catedratico>();
+
+
+    protected async Task Guardar()
+    {
+        //Como a nuestro formulario le tenemos vinculado el objeto catedratico en esta parte
+        //<EditForm Model="@catedratico" OnValidSubmit="@Guardar">
+        //ya no es necesario hacer nada, pues al dar clic en el botón guardar se modifican los valores
+        //Y como para buscar al catedrático lo hicimos buscandolo en la lista de catedraticos 
+        //de la siguiente manera
+        //catedratico = catedraticos.Find(c => c.Colegiado == colegiado);
+        //al modificar catedratico, se modifica también su valor dentro de la lista
+        //por lo tanto ya solo tenemos que guardar de nuevo la lista y el cambio queda realizado
+        //permanentemente
+        await localStorage.SetItemAsync("catedraticos", catedraticos);
+
+        //Al finalizar de guardar regresamos al formulario original
+        NavigationManager.NavigateTo("/catedratico-crear");
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {   //Cargar todos los catedraticos guardados
+        catedraticos = await localStorage.GetItemAsync<List<Catedratico>>("catedraticos");
+        
+        //Buscar en la lista de catedráticos el catedrático que mandaron a editar desde el otro formulario
+        //en este caso nos envian el colegiado por medio de la URL y lo obtenemos en la siguiente linea
+        //@page "/catedratico-editar/{colegiado}"
+        //que está al inicio del archivo, aquí aparte de decir que esta pagina se accede por medio de
+        //catedratico-editar se indica que nos estan enviando el {colegiado}               
+        catedratico = catedraticos.Find(c => c.Colegiado == colegiado);
+
+    }    
+
+}
